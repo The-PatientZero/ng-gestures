@@ -41,6 +41,7 @@ Thumbs.db
 /.angular
 
 *.orig
+*.tsbuildinfo
 
 **/downloads/**
 /.vscode
