@@ -1,0 +1,26 @@
+{
+  "name": "ng-gestures",
+  "version": "1.0.0",
+  "description": "Angular gesture library with declarative directives, service bindings, and HammerJS migration helpers.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/The-PatientZero/ng-gestures.git",
+    "directory": "packages/angular"
+  },
+  "homepage": "https://github.com/The-PatientZero/ng-gestures#readme",
+  "bugs": {
+    "url": "https://github.com/The-PatientZero/ng-gestures/issues"
+  },
+  "keywords": [
+    "angular",
+    "gestures",
+    "drag",
+    "pinch",
+    "touch",
+    "hammerjs"
+  ],
+  "peerDependencies": {
+    "@angular/core": ">=16.0.0 <21.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+NOTICE
+
+This project, authored by The-PatientZero, is an original work licensed under the MIT License (see `LICENSE`).
+
+Relationship to 'use-gesture':
+
+- This project was inspired by 'use-gesture' (https://github.com/pmndrs/use-gesture) and may include concepts or patterns similar to that project.
+- Portions of code, design, or conceptual approaches derived from 'use-gesture' are attributed to the original authors and are licensed under the MIT License provided in `THIRD_PARTY_LICENSES/use-gesture.MIT`.
+
+Attribution:
+Copyright (c) 2019 pmndrs
+
+For the full text of the original MIT license for 'use-gesture', see `THIRD_PARTY_LICENSES/use-gesture.MIT`.

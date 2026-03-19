@@ -1,0 +1,15 @@
+{
+  "dest": "../../dist/ng-gestures",
+  "assets": [
+    "./LICENSE",
+    "./NOTICE",
+    {
+      "glob": "**/*",
+      "input": "./THIRD_PARTY_LICENSES",
+      "output": "THIRD_PARTY_LICENSES"
+    }
+  ],
+  "lib": {
+    "entryFile": "src/index.ts"
+  }
+}

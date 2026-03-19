@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  /* Brand Theme Colors */
+  --brand-primary: #b1051d;
+  --brand-primary-light: #d1283a;
+  --brand-primary-dark: #8a0416;
+  --brand-secondary: #5d5f62;
+  --brand-secondary-light: #7a7c7f;
+  --brand-secondary-dark: #404245;
+  --brand-tertiary: #ebebeb;
+  --brand-base: #e0e0e0;
+  --brand-info: #178da8;
+  --brand-info-light: #3ba5b8;
+  --brand-info-dark: #0f6b82;
+  --brand-surface: #ffffff;
+  --brand-on-surface: #424242;
+  --brand-app-surface: #ffffff;
+  --brand-on-app-surface: #424242;
+  --brand-on-info: #ffffff;
+
+  /* Derived colors for UI */
+  --bg-gradient-start: var(--brand-primary);
+  --bg-gradient-end: var(--brand-info);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --overlay-bg: rgba(255, 255, 255, 0.1);
+  --text-primary: var(--brand-on-surface);
+  --text-secondary: var(--brand-secondary);
+  --accent-color: var(--brand-primary);
+  --success-color: #4ade80;
+}
