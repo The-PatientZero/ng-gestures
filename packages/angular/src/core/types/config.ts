@@ -6,7 +6,7 @@ export type CoordinatesKey = Exclude<GestureKey, 'pinch'>;
 
 export type GenericOptions = {
   /**
-   * Lets you specify a dom node or ref you want to attach the gesture to.
+   * Lets you specify a DOM node or ref-like target to attach the gesture to.
    */
   target?: Target;
   /**
@@ -19,7 +19,7 @@ export type GenericOptions = {
    */
   eventOptions?: AddEventListenerOptions;
   /**
-   * When set to false none of the handlers will be fired.
+   * When set to false, none of the handlers will fire.
    */
   enabled?: boolean;
   /**
@@ -53,14 +53,14 @@ export type GestureOptions<T extends GestureKey> = GenericOptions & {
    */
   preventDefault?: boolean;
   /**
-   * Forces the handler to fire even for non intentional displacement (ignores
+   * Forces the handler to fire even for non-intentional displacement (ignores
    * the threshold). In that case, the intentional attribute from state will
    * remain false until the threshold is reached.
    */
   triggerAllEvents?: boolean;
   /**
    * The elasticity coefficient of the gesture when going out of bounds. When
-   * set to true, the elasticiy coefficient will be defaulted to 0.15
+   * set to true, the elasticity coefficient defaults to 0.15.
    */
   rubberband?: boolean | number | Vector2;
   /**
@@ -89,7 +89,7 @@ export type CoordinatesConfig<Key extends CoordinatesKey = CoordinatesKey> = Ges
    */
   bounds?: Bounds | ((state: State[Key]) => Bounds);
   /**
-   * Determines the number of pixels in one direction needed for axises to be
+   * Determines the number of pixels in one direction needed for axes to be
    * calculated.
    */
   axisThreshold?: number;
@@ -114,7 +114,7 @@ export type PinchConfig = GestureOptions<'pinch'> & {
    */
   angleBounds?: PinchBounds | ((state: State['pinch']) => PinchBounds);
   /**
-   * Scales OR rotates when set to 'lock'.
+   * Scales or rotates when set to `'lock'`.
    */
   axis?: 'lock';
   /**
@@ -140,18 +140,16 @@ export type MoveConfig = CoordinatesConfig<'move'> & MoveAndHoverMouseOnly;
 
 export type DragConfig = Omit<CoordinatesConfig<'drag'>, 'axisThreshold' | 'bounds'> & {
   /**
-   * If true, the component won't trigger your drag logic if the user just clicked on the component.
+   * If true, clicks that do not meaningfully move the pointer are treated as
+   * taps instead of drag interactions.
    */
   filterTaps?: boolean;
   /**
-   * The maximum total displacement a tap can have
+   * The maximum total displacement a tap can have.
    */
   tapsThreshold?: number;
   /**
-   * Set this option to true when using with @react-three/fiber objects.
-   */
-  /**
-   * Limits the gesture `offset` to the specified bounds. Can be a ref or a dom
+   * Limits the gesture `offset` to the specified bounds. Can be a ref-like or DOM
    * node.
    */
   bounds?: DragBounds | ((state: State['drag']) => DragBounds);
@@ -167,22 +165,22 @@ export type DragConfig = Omit<CoordinatesConfig<'drag'>, 'axisThreshold' | 'boun
     touch?: boolean;
     /**
      * If true, drag will use touch events on touch-enabled devices, and use
-     * mouse events on non touch devices.
+     * mouse events on non-touch devices.
      */
     mouse?: boolean;
     /**
-     * If false, will disable KeyboardEvents that would otherwise trigger the
+     * If false, disables keyboard events that would otherwise trigger the
      * drag gesture when the element is focused. Defaults to true.
      */
     keys?: boolean;
     /**
-     * Doesn't use setPointerCapture when false and delegate drag handling to
-     * window
+     * When false, skips `setPointerCapture` and delegates drag handling to the
+     * configured window target instead.
      */
     capture?: boolean;
     /**
      * Will perform a pointer lock when drag starts, and exit pointer lock when
-     * drag ends,
+     * drag ends.
      */
     lock?: boolean;
   };
@@ -221,7 +219,7 @@ export type DragConfig = Omit<CoordinatesConfig<'drag'>, 'axisThreshold' | 'boun
   delay?: boolean | number;
   /**
    * Key-number record that determines for each device (`'mouse'`, `'touch'`,
-   * `'pen'`) the number of pixels of drag in one direction needed for axises to
+   * `'pen'`) the number of pixels of drag in one direction needed for axes to
    * be calculated.
    */
   axisThreshold?: Partial<Record<PointerType, number>>;

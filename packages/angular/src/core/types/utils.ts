@@ -3,11 +3,11 @@ export type WebKitGestureEvent = PointerEvent & { scale: number; rotation: numbe
 export type Target = EventTarget | { current: EventTarget | null };
 export type PointerType = 'mouse' | 'touch' | 'pen';
 
-// replaces NonUndefined from 4.7 and inferior versions
+// Backport of `NonUndefined` for older TypeScript versions.
 export type NonUndefined<T> = T extends undefined ? never : T;
 export type EventHandler<E extends Event = Event> = (event: E) => void;
 
-// rip off from React types
+// DOM handler names used when typing native event callbacks.
 export interface DOMHandlers {
   // Clipboard Events
   onCopy?: EventHandler<ClipboardEvent>;

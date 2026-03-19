@@ -12,8 +12,8 @@ export const pinchConfigResolver = {
     _k: string,
     { shared, pointer: { touch = false } = {} }: { shared: GenericOptions } & PinchConfig
   ) {
-    // Only try to use gesture events when they are supported and domTarget is set
-    // as React doesn't support gesture handlers.
+    // Use native gesture events only when the browser supports them and an
+    // explicit target is available.
     const sharedConfig = shared;
     if (sharedConfig.target && !SUPPORT.touch && SUPPORT.gesture) return 'gesture';
     if (SUPPORT.touch && touch) return 'touch';
@@ -21,7 +21,7 @@ export const pinchConfigResolver = {
       if (SUPPORT.pointer) return 'pointer';
       if (SUPPORT.touch) return 'touch';
     }
-    // device is undefined and that's ok, we're going to use wheel to zoom.
+    // Returning `undefined` falls back to wheel-based pinch support.
     return undefined;
   },
   bounds(_v: any, _k: string, { scaleBounds = {}, angleBounds = {} }: PinchConfig) {

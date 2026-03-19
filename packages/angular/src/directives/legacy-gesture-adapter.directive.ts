@@ -1,8 +1,11 @@
 import { Directive, OnInit, OnDestroy, Output, EventEmitter, ElementRef } from '@angular/core';
 import { GestureService } from '../gesture.service';
 import { FullGestureState } from '../core/types';
+import { GestureDestroyFn } from '../types';
 
-// This is the shape of the old HammerJS event your components expect
+/**
+ * HammerJS-style payload emitted by the legacy adapter directive.
+ */
 export interface HammerJSLikeEvent {
   deltaX: number;
   deltaY: number;
@@ -18,7 +21,6 @@ export interface HammerJSLikeEvent {
   standalone: true
 })
 export class LegacyGestureAdapterDirective implements OnInit, OnDestroy {
-  // Outputs that match the old HammerJS event names
   @Output() pan = new EventEmitter<HammerJSLikeEvent>();
   @Output() panstart = new EventEmitter<HammerJSLikeEvent>();
   @Output() panmove = new EventEmitter<HammerJSLikeEvent>();
@@ -26,7 +28,7 @@ export class LegacyGestureAdapterDirective implements OnInit, OnDestroy {
   @Output() pinch = new EventEmitter<HammerJSLikeEvent>();
   @Output() swipe = new EventEmitter<HammerJSLikeEvent>();
 
-  private destroyFn?: () => void;
+  private destroyFn?: GestureDestroyFn;
 
   constructor(
     private readonly el: ElementRef<HTMLElement>,
@@ -41,7 +43,6 @@ export class LegacyGestureAdapterDirective implements OnInit, OnDestroy {
         onPinch: (state) => this.handlePinch(state)
       },
       {
-        // Add any default configurations here if needed
         drag: {}
       }
     );
@@ -76,14 +77,17 @@ export class LegacyGestureAdapterDirective implements OnInit, OnDestroy {
     this.pinch.emit(event);
   }
 
-  // The core of the adapter: transforms the new state object to the old event format
-  private transformStateToHammerEvent(state: any): HammerJSLikeEvent {
+  /**
+   * Maps an `ng-gestures` state object to the HammerJS-like payload expected
+   * by legacy templates.
+   */
+  private transformStateToHammerEvent(state: FullGestureState<'drag'> | FullGestureState<'pinch'>): HammerJSLikeEvent {
     return {
       deltaX: state.delta[0],
       deltaY: state.delta[1],
       isFinal: state.last,
-      scale: state.offset ? state.offset[0] : 1, // For pinch
-      rotation: state.offset ? state.offset[1] : 0, // For pinch
+      scale: state.offset ? state.offset[0] : 1,
+      rotation: state.offset ? state.offset[1] : 0,
       srcEvent: state.event,
       ...state
     };

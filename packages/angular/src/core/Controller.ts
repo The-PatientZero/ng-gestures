@@ -12,11 +12,11 @@ export class Controller {
    */
   public gestures = new Set<GestureKey>();
   /**
-   * The event store that keeps track of the config.target listeners.
+   * Tracks listeners attached directly to `config.target`.
    */
   private readonly _targetEventStore = new EventStore(this);
   /**
-   * Object that keeps track of all gesture event listeners.
+   * Stores per-gesture event listeners.
    */
   public gestureEventStores: { [key in GestureKey]?: EventStore } = {};
   public gestureTimeoutStores: { [key in GestureKey]?: TimeoutStore } = {};
@@ -71,7 +71,7 @@ export class Controller {
   }
   /**
    * Cleans all side effects (listeners, timeouts). When the gesture is
-   * destroyed (in React, when the component is unmounted.)
+   * destroyed.
    */
   clean() {
     this._targetEventStore.clean();
@@ -81,8 +81,7 @@ export class Controller {
     }
   }
   /**
-   * Executes side effects (attaching listeners to a `config.target`). Ran on
-   * each render.
+   * Attaches listeners when an explicit `config.target` is configured.
    */
   effect() {
     if (this.config.shared.target) {
@@ -91,8 +90,8 @@ export class Controller {
     return () => this._targetEventStore.clean();
   }
   /**
-   * The bind function that can be returned by the gesture handler (a hook in
-   * React for example.)
+   * Builds handler props and, when a target is configured, attaches them
+   * directly to that target.
    * @param args
    */
   bind(...args: any[]) {
@@ -102,7 +101,7 @@ export class Controller {
     let target;
     if (sharedConfig.target) {
       target = sharedConfig.target();
-      // if target is undefined let's stop
+      // Stop early if the resolved target is not available yet.
       if (!target) return;
     }
 
@@ -131,17 +130,16 @@ export class Controller {
       }
     }
 
-    // If target isn't set, we return an object that contains gesture handlers
-    // mapped to props handler event keys.
+    // If no explicit target is configured, collapse the handler arrays into
+    // single callbacks.
     for (const handlerProp in props) {
       props[handlerProp] = chain(...props[handlerProp]);
     }
 
-    // When target isn't specified then return hanlder props.
+    // When no target is configured, return handler props to the caller.
     if (!target) return props;
 
-    // When target is specified, then add listeners to the controller target
-    // store.
+    // When a target is configured, attach listeners directly to it.
     for (const handlerProp in props) {
       const { device, capture, passive } = parseProp(handlerProp);
       this._targetEventStore.add(target, device, '', props[handlerProp], { capture, passive });
@@ -156,9 +154,8 @@ function setupGesture(ctrl: Controller, gestureKey: GestureKey) {
 }
 
 function resolveGestures(ctrl: Controller, internalHandlers: InternalHandlers) {
-  // make sure hover handlers are added first to prevent bugs such as #322
-  // where the hover pointerLeave handler is removed before the move
-  // pointerLeave, which prevents hovering: false to be fired.
+  // Register hover after move so its pointer-leave bookkeeping is not removed
+  // too early during shared teardown paths.
   if (internalHandlers.drag) setupGesture(ctrl, 'drag');
   if (internalHandlers.wheel) setupGesture(ctrl, 'wheel');
   if (internalHandlers.scroll) setupGesture(ctrl, 'scroll');
@@ -179,7 +176,7 @@ const bindToProps =
   ) => {
     const capture = options.capture ?? eventOptions.capture;
     const passive = options.passive ?? eventOptions.passive;
-    // a native handler is already passed as a prop like "onMouseDown"
+    // Native handlers are already expressed as prop names such as `onMouseDown`.
     let handlerProp = isNative ? device : toHandlerProp(device, action, capture);
     if (withPassiveOption && passive) handlerProp += 'Passive';
     props[handlerProp] = props[handlerProp] || [];

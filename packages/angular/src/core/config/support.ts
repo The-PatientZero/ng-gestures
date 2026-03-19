@@ -24,15 +24,13 @@ export const SUPPORT = {
   isBrowser,
   gesture: supportsGestureEvents(),
   /**
-   * Some touchscreens using webkits don't have 'ontouchstart' in window. So
-   * we're considering that browsers support TouchEvent if they have
-   * `maxTouchPoints > 1`
+   * Some WebKit-based touch devices do not expose `ontouchstart` on `window`.
+   * We intentionally use the stricter `TouchEvent` check here because relying
+   * on `maxTouchPoints` was too broad on some Windows systems.
    *
-   * This generates failure on other Windows systems, so reverting
-   * back to detecting TouchEvent support only.
+   * `touchscreen` remains available for broader device capability checks.
    */
   touch: supportsTouchEvents(),
-  // touch: isTouchScreen(),
   touchscreen: isTouchScreen(),
   pointer: supportsPointerEvents(),
   pointerLock: supportsPointerLock()

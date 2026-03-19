@@ -14,7 +14,7 @@ const KEYS_DELTA_MAP = {
 export class DragEngine extends CoordinatesEngine<'drag'> {
   ingKey = 'dragging' as const;
 
-  // superseeds generic Engine reset call
+  // Overrides the generic Engine reset logic with drag-specific state.
   override reset(this: DragEngine) {
     super.reset();
     const state = this.state;
@@ -51,7 +51,7 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
     state.canceled = true;
     state._active = false;
     setTimeout(() => {
-      // we run compute with no event so that kinematics won't be computed
+      // Recompute without a triggering event so kinematics are not recalculated.
       this.compute();
       this.emit();
     }, 0);
@@ -61,7 +61,7 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
     this.state._active = this.state._pointerActive || this.state._keyboardActive;
   }
 
-  // superseeds Engine clean function
+  // Overrides Engine.clean with drag-specific pointer cleanup.
   override clean() {
     this.pointerClean();
     this.state._pointerActive = false;
@@ -75,20 +75,18 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
 
     if (
       event.buttons != null &&
-      // If the user submits an array as pointer.buttons, don't start the drag
-      // if event.buttons isn't included inside that array.
+      // When `pointer.buttons` is an array, require the current button
+      // combination to be included.
       (Array.isArray(config.pointerButtons)
         ? !config.pointerButtons.includes(event.buttons)
-        : // If the user submits a number as pointer.buttons, refuse the drag if
-          // config.pointerButtons is different than `-1` and if event.buttons
-          // doesn't match the combination.
+        : // When `pointer.buttons` is a number, require an exact match unless
+          // `-1` is used to allow any combination.
           config.pointerButtons !== -1 && config.pointerButtons !== event.buttons)
     )
       return;
 
     const ctrlIds = this.ctrl.setEventIds(event);
-    // We need to capture all pointer ids so that we can keep track of them when
-    // they're released off the target
+    // Capture the pointer so release events can still be observed off-target.
     if (config.pointerCapture) {
       (event.target as HTMLElement).setPointerCapture(event.pointerId);
     }
@@ -118,13 +116,13 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
     this.computeInitial();
 
     if (config.preventScrollAxis && getPointerType(event) !== 'mouse') {
-      // when preventScrollAxis is set we don't consider the gesture active
-      // until it's deliberate
+      // Delay activation until the gesture becomes intentional so native scroll
+      // can win when appropriate.
       state._active = false;
       this.setupScrollPrevention(event);
     } else if (config.delay > 0) {
       this.setupDelayTrigger(event);
-      // makes sure we emit all events when `triggerAllEvents` flag is `true`
+      // Keep `triggerAllEvents` behavior consistent even while the drag is delayed.
       if (config.triggerAllEvents) {
         this.compute(event);
         this.emit();
@@ -194,8 +192,7 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
     V.addTo(state._movement, state._delta);
     this.compute(event);
 
-    // if the gesture is delayed but deliberate, then we can start it
-    // immediately.
+    // Start immediately once a delayed gesture becomes intentional.
     if (this.handleDelayedDrag(event)) return;
 
     if (this.handlePreventScrollAxis(event)) return;
@@ -222,12 +219,12 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
   private releasePointerCapture(event: PointerEvent) {
     try {
       if (this.config.pointerCapture && (event.target as HTMLElement).hasPointerCapture(event.pointerId)) {
-        // this shouldn't be necessary as it should be automatic when releasing the pointer
+        // Browsers should release capture automatically, but doing it here
+        // keeps teardown predictable across implementations.
         (event.target as HTMLElement).releasePointerCapture(event.pointerId);
       }
     } catch {
-      // Silently handle pointer capture release errors
-      // This can happen in various edge cases but doesn't affect functionality
+      // Ignore pointer-capture release failures in edge cases.
     }
   }
 
@@ -313,7 +310,7 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
   setupScrollPrevention(event: PointerEvent) {
     this.state._preventScroll = false;
     persistEvent(event);
-    // we add window listeners that will prevent the scroll when the user has started dragging
+    // Add window listeners so native scrolling can be blocked once dragging starts.
     const remove = this.eventStore.add(this.sharedConfig.window, 'touch', 'change', this.preventScroll.bind(this), {
       passive: false
     });
@@ -327,7 +324,7 @@ export class DragEngine extends CoordinatesEngine<'drag'> {
     this.timeoutStore.add(
       'dragDelay',
       () => {
-        // forces drag to start no matter the threshold when delay is reached
+        // Force the drag to start once the delay elapses, regardless of threshold.
         this.state._step = [0, 0];
         this.startPointerDrag(event);
       },

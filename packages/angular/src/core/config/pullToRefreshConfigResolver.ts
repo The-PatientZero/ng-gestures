@@ -24,18 +24,17 @@ export const pullToRefreshConfigResolver: ResolverMap = {
     if (SUPPORT.touch) return 'touch';
     return 'mouse';
   },
-  // Override eventOptions to disable passive for preventDefault support
+  // Pull-to-refresh may need `preventDefault()`, so passive listeners must stay disabled.
   eventOptions({ passive = false, capture = false } = {}) {
     return { passive, capture };
   },
   threshold() {
-    // Pull-to-refresh should emit from the first move so progress can be observed
-    // immediately. The refresh trigger distance is tracked separately via
-    // `pullThreshold`.
+    // Emit from the first move so progress can be observed immediately. The
+    // refresh trigger distance is tracked separately via `pullThreshold`.
     return V.toVector(0);
   },
   pullThreshold(value = DEFAULT_PULL_TO_REFRESH_CONFIG.threshold!) {
-    // Store the original number threshold for pull-to-refresh specific logic
+    // Preserve the original scalar threshold for pull-to-refresh specific logic.
     return value;
   },
   maxDistance(value = DEFAULT_PULL_TO_REFRESH_CONFIG.maxDistance!) {

@@ -17,7 +17,7 @@ export class PinchEngine extends Engine<'pinch'> {
     this.state._pointerEvents = new Map();
   }
 
-  // superseeds generic Engine reset call
+  // Overrides the generic Engine reset logic with pinch-specific state.
   override reset() {
     super.reset();
     const state = this.state;
@@ -64,7 +64,7 @@ export class PinchEngine extends Engine<'pinch'> {
     setTimeout(() => {
       state.canceled = true;
       state._active = false;
-      // we run compute with no event so that kinematics won't be computed
+      // Recompute without a triggering event so kinematics are not recalculated.
       this.compute();
       this.emit();
     }, 0);
@@ -76,9 +76,8 @@ export class PinchEngine extends Engine<'pinch'> {
     const ctrlTouchIds = this.ctrl.touchIds;
 
     if (state._active) {
-      // check that the touchIds that initiated the gesture are still enabled
-      // This is useful for when the page loses track of the pointers (minifying
-      // gesture on iPad).
+      // Verify that the touches which started the gesture are still tracked.
+      // This helps when the browser loses pointer continuity mid-gesture.
       if (state._touchIds.every((id) => ctrlTouchIds.has(id))) return;
       // The gesture is still active, but probably didn't have the opportunity to
       // end properly, so we restart the pinch.
@@ -104,7 +103,7 @@ export class PinchEngine extends Engine<'pinch'> {
     const ctrlPointerIds = this.ctrl.pointerIds;
 
     if (state._active) {
-      // see touchStart comment
+      // Same recovery path as touchStart when the browser loses pointer continuity.
       if (Array.from(_pointerEvents.keys()).every((id) => ctrlPointerIds.has(id))) return;
     }
 

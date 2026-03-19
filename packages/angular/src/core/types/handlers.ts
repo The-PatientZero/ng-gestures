@@ -6,8 +6,7 @@ export type Handler<Key extends GestureKey, EventType = EventTypes[Key]> = (
   state: Omit<FullGestureState<Key>, 'event'> & { event: EventType }
 ) => any;
 
-// if no type is provided in the user generic for a given key
-// then return the default EventTypes that key
+// Default to the built-in event type when the user does not override it.
 type check<T extends AnyHandlerEventTypes, Key extends GestureKey> = undefined extends T[Key]
   ? EventTypes[Key]
   : T[Key];
@@ -47,7 +46,7 @@ export type NativeHandlers<T extends AnyHandlerEventTypes = {}> = {
   ) => void;
 };
 
-// allows overriding the event type from the returned state in handlers
+// Allows consumers to override the event type carried on `state.event`.
 export type AnyHandlerEventTypes = Partial<
   {
     drag: any;

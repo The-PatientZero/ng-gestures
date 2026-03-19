@@ -179,8 +179,7 @@ export type CommonGestureState = {
    */
   memo?: any;
   /**
-   * The arguments passed to the bind function (only relevant in React when
-   * using `<div {...bind(someArgument)} />`)
+   * Optional arguments forwarded through `Controller.bind(...)`.
    */
   args?: any;
 };
@@ -211,7 +210,7 @@ export interface DragState extends CoordinatesState {
    */
   cancel(): void;
   /**
-   * True if the drag gesture is recognized as a tap (ie when the displacement
+   * True if the drag gesture is recognized as a tap (i.e. when the displacement
    * is lower than 3px per axis).
    */
   tap: boolean;
